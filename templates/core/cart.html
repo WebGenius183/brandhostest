@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block title %}Shopping Cart - BrandHostest{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-12">
+        <h1 class="font-display text-4xl font-bold mb-2">Shopping Cart</h1>
+        <p class="text-gray-400">Review your items before checkout</p>
+    </div>
+    
+    {% if items %}
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Cart Items -->
+            <div class="lg:col-span-2">
+                <div class="space-y-4">
+                    {% for item in items %}
+                        <div class="card p-6 flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
+                            <!-- Item Info -->
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-lg mb-2">
+                                    {% if item.item_type == 'domain' %}
+                                        {{ item.domain_name }}{{ item.domain_extension.name }}
+                                    {% else %}
+                                        {{ item.hosting_plan.name }}
+                                    {% endif %}
+                                </h3>
+                                <p class="text-sm text-gray-400">
+                                    {% if item.item_type == 'domain' %}
+                                        Domain Registration - 1 Year
+                                    {% else %}
+                                        {{ item.hosting_plan.get_plan_type_display }} - {{ item.hosting_duration|title }}
+                                    {% endif %}
+                                </p>
+                            </div>
+                            
+                            <!-- Price -->
+                            <div class="text-right min-w-32">
+                                <div class="text-2xl font-bold text-cyan-400">${{ item.price }}</div>
+                                <div class="text-xs text-gray-400">per {{ item.hosting_duration|default:'year' }}</div>
+                            </div>
+                            
+                            <!-- Remove Button -->
+                            <form action="{% url 'remove_from_cart' item.id %}" method="POST" class="inline">
+                                {% csrf_token %}
+                                <button type="submit" class="text-red-400 hover:text-red-300 transition text-sm font-semibold">
+                                    Remove
+                                </button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Cart Summary -->
+            <div class="lg:col-span-1">
+                <div class="card p-8 sticky top-24">
+                    <h2 class="font-display text-2xl font-bold mb-6">Order Summary</h2>
+                    
+                    <!-- Items -->
+                    <div class="space-y-4 mb-6 pb-6 border-b border-slate-700">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-400">{{ items|length }} item{{ items|length|pluralize }}</span>
+                            <span>${{ total }}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Pricing -->
+                    <div class="space-y-3 mb-8">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Subtotal</span>
+                            <span>${{ total }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Tax (estimated)</span>
+                            <span>$0.00</span>
+                        </div>
+                        <div class="border-t border-slate-700 pt-3 flex justify-between text-lg font-bold">
+                            <span>Total</span>
+                            <span class="gradient-text">${{ total }}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Checkout Button -->
+                    <a href="{% url 'checkout' %}" class="btn-primary w-full text-center block mb-3">
+                        Proceed to Checkout
+                    </a>
+                    <a href="{% url 'home' %}" class="btn-secondary w-full text-center block">
+                        Continue Shopping
+                    </a>
+                    
+                    <!-- Info -->
+                    <div class="mt-6 p-4 bg-slate-800/50 rounded-lg">
+                        <p class="text-xs text-gray-400">
+                            ✓ Secure payment processing<br>
+                            ✓ Money-back guarantee<br>
+                            ✓ No hidden charges
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="text-center card p-16">
+            <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+            <h2 class="font-display text-3xl font-bold mb-4">Your cart is empty</h2>
+            <p class="text-gray-400 mb-8">Add domains or hosting plans to get started</p>
+            
+            <div class="flex gap-4 justify-center flex-wrap">
+                <a href="{% url 'domain_search' %}" class="btn-primary">Browse Domains</a>
+                <a href="{% url 'hosting_plans' %}" class="btn-outline">View Hosting</a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    // Remove item confirmation
+    document.querySelectorAll('form[action*="remove_from_cart"]').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            if (!confirm('Remove this item from cart?')) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+{% endblock %}

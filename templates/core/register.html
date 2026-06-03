@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign Up - BrandHostest{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <!-- Header -->
+    <div class="text-center mb-12">
+        <h1 class="font-display text-4xl font-bold mb-4">Create Account</h1>
+        <p class="text-gray-400">Join thousands of satisfied customers</p>
+    </div>
+    
+    <!-- Registration Form -->
+    <div class="card p-8 space-y-6">
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            
+            <!-- Username -->
+            <div>
+                <label class="block text-sm font-semibold mb-3">Username</label>
+                <input 
+                    type="text" 
+                    name="username" 
+                    placeholder="Choose a username"
+                    class="w-full px-4 py-3 rounded-lg bg-slate-700 text-white"
+                    required
+                >
+                <p class="text-xs text-gray-400 mt-1">4-30 characters, letters and numbers only</p>
+            </div>
+            
+            <!-- Email -->
+            <div>
+                <label class="block text-sm font-semibold mb-3">Email Address</label>
+                <input 
+                    type="email" 
+                    name="email" 
+                    placeholder="your@email.com"
+                    class="w-full px-4 py-3 rounded-lg bg-slate-700 text-white"
+                    required
+                >
+            </div>
+            
+            <!-- Password -->
+            <div>
+                <label class="block text-sm font-semibold mb-3">Password</label>
+                <input 
+                    type="password" 
+                    name="password" 
+                    placeholder="Create a strong password"
+                    class="w-full px-4 py-3 rounded-lg bg-slate-700 text-white"
+                    required
+                >
+                <p class="text-xs text-gray-400 mt-1">Minimum 8 characters with numbers and symbols</p>
+            </div>
+            
+            <!-- Confirm Password -->
+            <div>
+                <label class="block text-sm font-semibold mb-3">Confirm Password</label>
+                <input 
+                    type="password" 
+                    name="confirm_password" 
+                    placeholder="Re-enter your password"
+                    class="w-full px-4 py-3 rounded-lg bg-slate-700 text-white"
+                    required
+                >
+            </div>
+            
+            <!-- Terms -->
+            <label class="flex items-start gap-3 cursor-pointer">
+                <input type="checkbox" required class="w-4 h-4 mt-1 accent-cyan-500">
+                <span class="text-sm text-gray-400">
+                    I agree to the 
+                    <a href="#" class="text-cyan-400 hover:text-cyan-300">Terms of Service</a> and 
+                    <a href="#" class="text-cyan-400 hover:text-cyan-300">Privacy Policy</a>
+                </span>
+            </label>
+            
+            <!-- Marketing -->
+            <label class="flex items-start gap-3 cursor-pointer">
+                <input type="checkbox" class="w-4 h-4 mt-1 accent-cyan-500">
+                <span class="text-sm text-gray-400">
+                    I'd like to receive emails about special offers and updates
+                </span>
+            </label>
+            
+            <!-- Submit -->
+            <button type="submit" class="btn-primary w-full mt-6">
+                Create Account
+            </button>
+        </form>
+        
+        <!-- Divider -->
+        <div class="relative">
+            <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-slate-700"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+                <span class="px-2 bg-slate-800 text-gray-400">or</span>
+            </div>
+        </div>
+        
+        <!-- Social Sign Up -->
+        <div class="space-y-3">
+            <button type="button" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-slate-700 hover:bg-slate-600 transition">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0C5.372 0 0 5.373 0 12s5.372 12 12 12 12-5.373 12-12S18.628 0 12 0zm-2.5 18.5h-2v-9h2v9zm-1-10.27c-.62 0-1.123-.5-1.123-1.127 0-.627.503-1.127 1.123-1.127s1.122.5 1.122 1.127c0 .627-.5 1.127-1.122 1.127zM16.75 18.5h-2v-4.352c0-1.036-.018-2.368-1.445-2.368-1.446 0-1.668 1.129-1.668 2.295v4.425h-2v-9h1.92v1.227h.027c.268-.507.92-1.04 1.893-1.04 2.023 0 2.395 1.33 2.395 3.062v4.751z"/>
+                </svg>
+                <span>LinkedIn</span>
+            </button>
+            <button type="button" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-slate-700 hover:bg-slate-600 transition">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C15.503,1.607,13.93,1,12.545,1C6.477,1,1.635,5.842,1.635,11.91s4.842,10.91,10.91,10.91c6.5,0,10.868-4.618,10.868-11.1c0-0.78-0.086-1.221-0.239-1.738H12.545z"/>
+                </svg>
+                <span>Google</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Login Link -->
+    <div class="text-center mt-8">
+        <p class="text-gray-400">Already have an account? 
+            <a href="{% url 'login' %}" class="text-cyan-400 hover:text-cyan-300 font-semibold">
+                Sign in
+            </a>
+        </p>
+    </div>
+    
+    <!-- Benefits -->
+    <div class="mt-12 space-y-3 text-center">
+        <p class="font-semibold mb-4">Benefits of joining BrandHostest:</p>
+        <div class="space-y-2 text-sm text-gray-400">
+            <p>✓ Instant domain registration and activation</p>
+            <p>✓ Powerful hosting with 99.9% uptime</p>
+            <p>✓ 24/7 expert customer support</p>
+            <p>✓ 30-day money-back guarantee</p>
+            <p>✓ Free SSL certificates on all plans</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

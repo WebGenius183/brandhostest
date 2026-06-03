@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BrandHostest - Domain & Hosting Reseller{% endblock %}</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Heroicons -->
+    <script src="https://heroicons.com/svg/solid.js"></script>
+    
+    <style>
+        :root {
+            --primary: #0a0e1a;
+            --secondary: #141b2d;
+            --tertiary: #1e293b;
+            --accent-primary: #00d9ff;
+            --accent-secondary: #0087d4;
+            --accent-tertiary: #8b5cf6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-tertiary: #94a3b8;
+            --border-color: rgba(15, 23, 42, 0.6);
+        }
+        
+        * {
+            font-family: 'Sora', sans-serif;
+        }
+        
+        .font-display {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0e1a 0%, #141b2d 50%, #1a1f3a 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Background effects */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 217, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.06) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        /* Premium gradient backgrounds */
+        .gradient-primary {
+            background: linear-gradient(135deg, #00d9ff 0%, #0087d4 100%);
+        }
+        
+        .gradient-secondary {
+            background: linear-gradient(135deg, #8b5cf6 0%, #00d9ff 100%);
+        }
+        
+        .gradient-dark {
+            background: linear-gradient(135deg, #141b2d 0%, #1e293b 100%);
+        }
+        
+        /* Animated gradient text */
+        .gradient-text {
+            background: linear-gradient(135deg, #00d9ff, #0087d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Smooth transitions */
+        a, button {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Enhanced hover effects */
+        .card-hover {
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                        box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                        border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 20px 50px rgba(0, 217, 255, 0.12), 
+                        0 8px 20px rgba(139, 92, 246, 0.08);
+            border-color: rgba(0, 217, 255, 0.3);
+        }
+        
+        /* Input styling */
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"],
+        input[type="tel"],
+        select,
+        textarea {
+            background-color: rgba(15, 23, 42, 0.4) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-primary) !important;
+            backdrop-filter: blur(10px) !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        input[type="number"]:focus,
+        input[type="tel"]:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--accent-primary) !important;
+            box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.15), 
+                        inset 0 0 20px rgba(0, 217, 255, 0.05) !important;
+            background-color: rgba(15, 23, 42, 0.6) !important;
+        }
+        
+        input::placeholder,
+        textarea::placeholder {
+            color: var(--text-tertiary) !important;
+        }
+        
+        /* Button styles */
+        .btn-primary {
+            @apply px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-cyan-500/40 transition-all border border-cyan-400/20 hover:border-cyan-400/40 active:scale-95;
+        }
+        
+        .btn-primary:disabled {
+            @apply opacity-50 cursor-not-allowed hover:shadow-none;
+        }
+        
+        .btn-secondary {
+            @apply px-6 py-3 bg-slate-700/50 backdrop-blur-sm text-white rounded-lg font-semibold hover:bg-slate-600/70 transition-all border border-slate-600/30 hover:border-slate-500/50 active:scale-95;
+        }
+        
+        .btn-outline {
+            @apply px-6 py-3 border-2 border-cyan-500/60 text-cyan-300 rounded-lg font-semibold hover:bg-cyan-500/15 hover:border-cyan-400 transition-all active:scale-95 backdrop-blur-sm;
+        }
+        
+        /* Badge styles */
+        .badge-success {
+            @apply px-3 py-1.5 bg-emerald-500/20 text-emerald-300 rounded-full text-xs font-semibold border border-emerald-500/30 backdrop-blur-sm;
+        }
+        
+        .badge-warning {
+            @apply px-3 py-1.5 bg-amber-500/20 text-amber-300 rounded-full text-xs font-semibold border border-amber-500/30 backdrop-blur-sm;
+        }
+        
+        .badge-danger {
+            @apply px-3 py-1.5 bg-rose-500/20 text-rose-300 rounded-full text-xs font-semibold border border-rose-500/30 backdrop-blur-sm;
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes glow {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(0, 217, 255, 0.5);
+            }
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        .animate-fadeInUp {
+            animation: fadeInUp 0.7s ease-out;
+        }
+        
+        .animate-slideIn {
+            animation: slideIn 0.7s ease-out;
+        }
+        
+        .animate-slideInRight {
+            animation: slideInRight 0.7s ease-out;
+        }
+        
+        .animate-glow {
+            animation: glow 3s ease-in-out infinite;
+        }
+        
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(180deg, rgba(14, 18, 30, 0.9) 0%, rgba(14, 18, 30, 0.7) 100%);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 217, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        
+        .navbar a {
+            color: var(--text-secondary);
+            position: relative;
+        }
+        
+        .navbar a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-primary), transparent);
+            transition: width 0.3s ease;
+        }
+        
+        .navbar a:hover::after {
+            width: 100%;
+        }
+        
+        .navbar a:hover {
+            color: var(--accent-primary);
+        }
+        
+        /* Cards */
+        .card {
+            background: linear-gradient(135deg, rgba(20, 27, 45, 0.6) 0%, rgba(30, 41, 59, 0.4) 100%);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(15px);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            border-color: rgba(0, 217, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 217, 255, 0.08);
+        }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.3);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, var(--accent-secondary), var(--accent-tertiary));
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <a href="{% url 'home' %}" class="flex items-center gap-3 group hover:scale-105 transition-transform">
+                    <div class="w-10 h-10 gradient-primary rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/20 group-hover:shadow-cyan-500/40 transition-all">
+                        <span class="text-white font-bold text-lg font-display">BH</span>
+                    </div>
+                    <span class="font-display text-xl font-bold gradient-text hidden sm:inline">BrandHostest</span>
+                </a>
+                
+                <!-- Menu Items -->
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="{% url 'domain_search' %}" class="text-gray-400 hover:text-cyan-400 transition">Domains</a>
+                    <a href="{% url 'hosting_plans' %}" class="text-gray-400 hover:text-cyan-400 transition">Hosting</a>
+                    <a href="#pricing" class="text-gray-400 hover:text-cyan-400 transition">Pricing</a>
+                    <a href="#about" class="text-gray-400 hover:text-cyan-400 transition">About</a>
+                </div>
+                
+                <!-- Right Side Items -->
+                <div class="flex items-center gap-4">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'view_cart' %}" class="relative hover:text-cyan-400 transition group">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            {% if user.cart.items.count %}
+                                <span class="absolute -top-2 -right-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-semibold shadow-lg shadow-cyan-500/50">
+                                    {{ user.cart.items.count }}
+                                </span>
+                            {% endif %}
+                        </a>
+                        <a href="{% url 'dashboard' %}" class="btn-primary text-sm">Dashboard</a>
+                        <a href="{% url 'logout' %}" class="text-gray-400 hover:text-rose-400 transition">Logout</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="text-gray-400 hover:text-cyan-400 transition">Login</a>
+                        <a href="{% url 'register' %}" class="btn-primary text-sm">Sign Up</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Messages -->
+    {% if messages %}
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+            {% for message in messages %}
+                <div class="p-4 rounded-lg border backdrop-blur-sm {% if message.tags %}bg-{{ message.tags }}-500/15 text-{{ message.tags }}-300 border-{{ message.tags }}-500/30{% else %}bg-blue-500/15 text-blue-300 border-blue-500/30{% endif %} animate-fadeInUp">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    <!-- Main Content -->
+    <main class="py-8 relative z-10">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    <footer class="bg-gradient-to-b from-slate-900/30 to-slate-950/50 border-t border-slate-700/30 mt-16 backdrop-blur-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h3 class="font-display text-lg font-bold mb-4 gradient-text">BrandHostest</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Your premier domain and hosting reseller platform with cutting-edge features.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-300 mb-4">Products</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="{% url 'domain_search' %}" class="hover:text-cyan-400 transition duration-300">Domain Registration</a></li>
+                        <li><a href="{% url 'hosting_plans' %}" class="hover:text-cyan-400 transition duration-300">Web Hosting</a></li>
+                        <li><a href="{% url 'hosting_plans' %}?type=ssl" class="hover:text-cyan-400 transition duration-300">SSL Certificates</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-300 mb-4">Company</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-cyan-400 transition duration-300">About Us</a></li>
+                        <li><a href="#" class="hover:text-cyan-400 transition duration-300">Contact</a></li>
+                        <li><a href="#" class="hover:text-cyan-400 transition duration-300">Blog</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-300 mb-4">Legal</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-cyan-400 transition duration-300">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-cyan-400 transition duration-300">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-cyan-400 transition duration-300">DMCA</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-slate-700/30 pt-8">
+                <p class="text-center text-gray-500 text-sm">© 2024 BrandHostest. All rights reserved. Crafted with precision.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // CSRF Token for AJAX requests
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        const csrftoken = getCookie('csrftoken');
+        
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#') {
+                    e.preventDefault();
+                    const element = document.querySelector(href);
+                    if (element) {
+                        element.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            });
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

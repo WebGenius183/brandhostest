@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+
+{% block title %}Domain Search - BrandHostest{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="text-center mb-16 animate-fadeInUp">
+        <h1 class="font-display text-5xl font-bold mb-4">Find Your Perfect Domain</h1>
+        <p class="text-gray-400 text-lg">Check availability and register your domain instantly</p>
+    </div>
+    
+    <!-- Search Form -->
+    <div class="card p-10 max-w-3xl mx-auto mb-16 border-cyan-500/20 ring-1 ring-cyan-500/10">
+        <form action="{% url 'domain_search' %}" method="POST" class="space-y-8">
+            {% csrf_token %}
+            
+            <div>
+                <label class="block text-sm font-semibold mb-4 text-cyan-400">Domain Name</label>
+                <input 
+                    type="text" 
+                    name="domain_name" 
+                    placeholder="yourbusiness" 
+                    class="w-full px-6 py-4 rounded-xl bg-slate-700/50 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 border border-slate-600 text-lg"
+                    value="{{ search_query }}"
+                    required
+                >
+                <p class="text-xs text-gray-400 mt-2">Enter the domain name without extension</p>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-semibold mb-4 text-cyan-400">Extensions</label>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                    {% for ext in extensions %}
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <input 
+                                type="checkbox" 
+                                name="extensions" 
+                                value="{{ ext.name }}"
+                                class="w-5 h-5 rounded bg-slate-700 border-slate-600 accent-cyan-500 group-hover:border-cyan-500 transition-colors"
+                            >
+                            <span class="text-sm font-medium text-gray-300 group-hover:text-cyan-400 transition-colors">{{ ext.name }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+                <p class="text-xs text-gray-400 mt-3">Leave all unchecked to search all extensions</p>
+            </div>
+            
+            <button type="submit" class="btn-primary w-full py-4 text-lg font-semibold">Search Domains</button>
+        </form>
+    </div>
+    
+    <!-- Search Results -->
+    {% if results %}
+        <div class="animate-fadeInUp">
+            <h2 class="font-display text-3xl font-bold mb-8">
+                Search Results 
+                <span class="text-cyan-400">({{ results|length }})</span>
+            </h2>
+            
+            <div class="space-y-4">
+                {% for result in results %}
+                    <div class="card p-8 card-hover flex flex-col md:flex-row md:items-center gap-6 justify-between group hover:ring-1 hover:ring-cyan-500/30">
+                        <!-- Item Info -->
+                        <div class="flex-1">
+                            <div class="flex items-center gap-4 mb-3">
+                                <h3 class="font-display text-2xl font-bold group-hover:gradient-text transition-all">
+                                    {{ result.domain }}
+                                </h3>
+                            </div>
+                            <div class="flex gap-3 items-center flex-wrap">
+                                {% if result.available %}
+                                    <span class="badge-success">✓ Available</span>
+                                {% else %}
+                                    <span class="badge-danger">✗ Unavailable</span>
+                                {% endif %}
+                                <span class="text-gray-400 text-sm px-3 py-1.5 bg-slate-800/50 rounded-full border border-slate-700/30">
+                                    {{ result.extension.get_plan_type_display }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Price -->
+                        <div class="flex items-center gap-8">
+                            <div class="text-right">
+                                <div class="text-3xl font-bold text-cyan-400">${{ result.registration_price }}</div>
+                                <div class="text-xs text-gray-400 mt-1">First year</div>
+                            </div>
+                            
+                            <!-- Action Button -->
+                            {% if result.available %}
+                                {% if user.is_authenticated %}
+                                    <form action="{% url 'add_to_cart' %}" method="POST" class="inline">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="item_type" value="domain">
+                                        <input type="hidden" name="domain_name" value="{{ result.domain|slice:':5' }}">
+                                        <input type="hidden" name="extension_id" value="{{ result.extension.id }}">
+                                        <button type="submit" class="btn-primary whitespace-nowrap">Add to Cart</button>
+                                    </form>
+                                {% else %}
+                                    <a href="{% url 'login' %}?next={% url 'domain_search' %}" class="btn-primary whitespace-nowrap">
+                                        Login to Add
+                                    </a>
+                                {% endif %}
+                            {% else %}
+                                <button type="button" disabled class="btn-secondary opacity-50 cursor-not-allowed whitespace-nowrap">
+                                    Unavailable
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% elif search_query %}
+        <div class="text-center card p-16 border-yellow-500/20 ring-1 ring-yellow-500/10 animate-fadeInUp">
+            <svg class="w-20 h-20 text-gray-400 mx-auto mb-6 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <h3 class="text-2xl font-semibold mb-3">No results found</h3>
+            <p class="text-gray-400 mb-6">Try a different domain name or extension</p>
+            <a href="{% url 'domain_search' %}" class="btn-outline inline-block">Try Another Search</a>
+        </div>
+    {% else %}
+        <div class="text-center card p-16 border-cyan-500/20 ring-1 ring-cyan-500/10 animate-fadeInUp">
+            <svg class="w-20 h-20 text-gray-400 mx-auto mb-6 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <h3 class="text-2xl font-semibold mb-3">Start Searching</h3>
+            <p class="text-gray-400">Enter a domain name above to check availability</p>
+        </div>
+    {% endif %}
+    
+    <!-- Popular Domains Section -->
+    <div class="mt-20 pt-20 border-t border-slate-700/20">
+        <h2 class="font-display text-4xl font-bold mb-12 text-center">Trending Domain Extensions</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {% for ext in extensions|slice:':8' %}
+                <div class="card p-8 text-center card-hover group">
+                    <div class="text-5xl font-bold gradient-text mb-4 group-hover:scale-110 transition-transform">{{ ext.name }}</div>
+                    <div class="text-sm text-gray-400 mb-6">
+                        <div class="font-semibold text-cyan-400 text-lg">${{ ext.registration_price }}</div>
+                        <div class="text-xs mt-1">First year</div>
+                        <div class="text-xs text-gray-500">Renewal: ${{ ext.renewal_price }}/yr</div>
+                    </div>
+                    <form action="{% url 'domain_search' %}" method="POST" class="w-full">
+                        {% csrf_token %}
+                        <input type="hidden" name="domain_name" value="example">
+                        <input type="hidden" name="extensions" value="{{ ext.name }}">
+                        <button type="submit" class="btn-outline w-full opacity-0 group-hover:opacity-100 transition-opacity">Search</button>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+    // Add to cart with notification
+    document.querySelectorAll('form[action*="add_to_cart"]').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            fetch(this.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams(new FormData(this))
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Domain added to cart!', 'success');
+                    setTimeout(() => {
+                        window.location.href = '{% url "view_cart" %}';
+                    }, 1500);
+                }
+            });
+        });
+    });
+    
+    function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-20 right-4 p-4 rounded-lg ${type === 'success' ? 'bg-gradient-to-r from-emerald-500 to-green-600 shadow-lg shadow-emerald-500/50' : 'bg-gradient-to-r from-rose-500 to-red-600 shadow-lg shadow-rose-500/50'} text-white font-semibold z-50 animate-slideInRight`;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateX(400px)';
+            notification.style.transition = 'all 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+</script>
+{% endblock %}
