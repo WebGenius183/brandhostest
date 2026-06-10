@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-dev-key-change-in-production')
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', "*").split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', "brandhostest.vercel.app").split(',')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
