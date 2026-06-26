@@ -30,8 +30,10 @@ def home(request):
 
 
 # Domain Management
+from core.truehost_service import truehost
+
 def domain_search(request):
-    """Domain availability search"""
+    """Domain availability search with TrueHost API"""
     extensions = DomainExtension.objects.filter(is_active=True)
     results = []
     
@@ -46,8 +48,9 @@ def domain_search(request):
                 exts = extensions
             
             for ext in exts:
-                # Simulated domain availability check
-                is_available = not bool(hash(domain_name + ext.name) % 3)
+                # Real TrueHost API check
+                is_available = truehost.check_domain(domain_name, ext.name)
+                
                 results.append({
                     'domain': f"{domain_name}{ext.name}",
                     'extension': ext,
@@ -61,7 +64,6 @@ def domain_search(request):
         'search_query': request.POST.get('domain_name', ''),
     }
     return render(request, 'core/domain_search.html', context)
-
 
 def domain_details(request, domain_name, extension):
     """Detailed domain information"""
