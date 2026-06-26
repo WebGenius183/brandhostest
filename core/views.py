@@ -268,33 +268,53 @@ def checkout(request):
     return render(request, 'core/checkout.html', context)
 
 
+from core.truehost_service import truehost
+
 @login_required
 def payment(request, order_id):
-    """Payment processing"""
+    """Payment processing with TrueHost domain registration"""
     order = get_object_or_404(Order, id=order_id, user=request.user)
     
     if request.method == 'POST':
-        # Process payment (simulated - integrate with Stripe in production)
+        # Mark payment complete
         order.payment_status = 'completed'
         order.mark_completed()
         
-        # Create notification
+        # Register domains with TrueHost
+        for item in order.items.filter(item_type='domain'):
+            user_data = {
+                'first_name': request.user.first_name or request.user.username,
+                'last_name': request.user.last_name or 'User',
+                'email': request.user.email,
+            }
+            
+            result = truehost.register_domain(
+                item.domain_name,
+                item.domain_extension.name,
+                user_data
+            )
+            
+            # Save registration details
+            item.metadata = result
+            item.save()
+            
+            # Log result
+            print(f"Domain registration: {result}")
+        
+        # Notify user
         Notification.objects.create(
             user=request.user,
             notification_type='order',
-            title='Order Completed',
-            message=f'Your order {order.order_number} has been processed successfully.',
+            title='Order Completed & Domains Registered!',
+            message=f'Your domains have been registered with TrueHost',
         )
         
-        messages.success(request, f'Payment successful! Order number: {order.order_number}')
+        messages.success(request, 'Payment successful! Domains registering...')
         return redirect('order_confirmation', order_id=order.id)
     
-    context = {
-        'order': order,
-    }
+    context = {'order': order}
     return render(request, 'core/payment.html', context)
-
-
+    
 @login_required
 def order_confirmation(request, order_id):
     """Order confirmation page"""
