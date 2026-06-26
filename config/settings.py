@@ -126,3 +126,8 @@ STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY', '')
 # Domain Registrar API Configuration
 WHOIS_API_KEY = os.getenv('WHOIS_API_KEY', '')
 REGISTRAR_API_KEY = os.getenv('REGISTRAR_API_KEY', '')
+
+# TrueHost API
+TRUEHOST_API_KEY = os.getenv('TRUEHOST_API_KEY', '')
+TRUEHOST_API_USERNAME = os.getenv('TRUEHOST_API_USERNAME', '')
+TRUEHOST_API_URL = os.getenv('TRUEHOST_API_URL', 'https://api.truehost.com/')
