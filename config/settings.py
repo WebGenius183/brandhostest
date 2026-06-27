@@ -131,3 +131,8 @@ REGISTRAR_API_KEY = os.getenv('REGISTRAR_API_KEY', '')
 WHM_API_TOKEN = os.getenv('TRUEHOST_API_KEY', '')
 WHM_USERNAME = os.getenv('TRUEHOST_API_USERNAME', '')
 WHM_HOST = os.getenv('TRUEHOST_API_URL', 'https://api.truehost.com/')
+
+# TrueHost API
+TRUEHOST_API_KEY = os.getenv('TRUEHOST_API_KEY', '')
+TRUEHOST_API_USERNAME = os.getenv('TRUEHOST_API_USERNAME', '')
+TRUEHOST_API_URL = os.getenv('TRUEHOST_API_URL', 'https://api.truehost.com/')
