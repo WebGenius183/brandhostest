@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-dev-key-change-in-production')
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', "brandhostest.com").split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'brandhostest.com').split(',')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -128,9 +128,9 @@ WHOIS_API_KEY = os.getenv('WHOIS_API_KEY', '')
 REGISTRAR_API_KEY = os.getenv('REGISTRAR_API_KEY', '')
 
 # TrueHost API
-WHM_API_TOKEN = os.getenv('TRUEHOST_API_KEY', '')
-WHM_USERNAME = os.getenv('TRUEHOST_API_USERNAME', '')
-WHM_HOST = os.getenv('TRUEHOST_API_URL', 'https://api.truehost.com/')
+WHM_HOST = os.getenv("WHM_HOST")
+WHM_USERNAME = os.getenv("WHM_USERNAME")
+WHM_API_TOKEN = os.getenv("WHM_API_TOKEN")
 
 # TrueHost API
 TRUEHOST_API_KEY = os.getenv('TRUEHOST_API_KEY', '')

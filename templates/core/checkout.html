@@ -64,36 +64,25 @@
                 <div class="card p-8">
                     <h2 class="font-display text-2xl font-bold mb-6">Payment Method</h2>
                     
-                    <div class="space-y-4">
+                    <div class="space-y-4">                        
                         <label class="flex items-center gap-4 cursor-pointer">
                             <input 
                                 type="radio" 
                                 name="payment_method" 
-                                value="card"
-                                checked
+                                value="Paystack"
                                 class="w-4 h-4 accent-cyan-500"
                             >
-                            <span>Credit/Debit Card</span>
+                            <span>Paystack</span>
                         </label>
                         
                         <label class="flex items-center gap-4 cursor-pointer">
                             <input 
                                 type="radio" 
                                 name="payment_method" 
-                                value="paypal"
+                                value="Flutterwave"
                                 class="w-4 h-4 accent-cyan-500"
                             >
-                            <span>PayPal</span>
-                        </label>
-                        
-                        <label class="flex items-center gap-4 cursor-pointer">
-                            <input 
-                                type="radio" 
-                                name="payment_method" 
-                                value="bank"
-                                class="w-4 h-4 accent-cyan-500"
-                            >
-                            <span>Bank Transfer</span>
+                            <span>Flutterwave</span>
                         </label>
                     </div>
                 </div>
@@ -113,7 +102,7 @@
                 </div>
                 
                 <!-- Submit Button -->
-                <button type="submit" class="btn-primary w-full">
+                <button type="submit" class="btn-primary w-full border rounded-2xl hover:bg-cyan-950 hover:text-white p-2">
                     Proceed to Payment
                 </button>
             </form>
@@ -134,7 +123,7 @@
                                     {{ item.hosting_plan.name }}
                                 {% endif %}
                             </span>
-                            <span class="font-semibold">${{ item.price }}</span>
+                            <span class="font-semibold">₦{{ item.price }}</span>
                         </div>
                     {% endfor %}
                 </div>
@@ -142,15 +131,15 @@
                 <div class="space-y-3 mb-8">
                     <div class="flex justify-between">
                         <span class="text-gray-400">Subtotal</span>
-                        <span>${{ total }}</span>
+                        <span>₦{{ total }}</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-gray-400">Tax</span>
-                        <span>$0.00</span>
+                        <span>₦0.00</span>
                     </div>
                     <div class="border-t border-slate-700 pt-3 flex justify-between text-lg font-bold">
                         <span>Total Due</span>
-                        <span class="gradient-text">${{ total }}</span>
+                        <span class="gradient-text">₦{{ total }}</span>
                     </div>
                 </div>
                 

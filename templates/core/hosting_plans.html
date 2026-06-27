@@ -15,12 +15,6 @@
         <a href="{% url 'hosting_plans' %}" class="px-6 py-2 rounded-lg {% if not selected_type %}gradient-primary{% else %}bg-slate-700 hover:bg-slate-600{% endif %}">
             All Plans
         </a>
-        {% for ptype in plan_types %}
-            <a href="{% url 'hosting_plans' %}?type={{ ptype }}" 
-               class="px-6 py-2 rounded-lg {% if ptype == selected_type %}gradient-primary{% else %}bg-slate-700 hover:bg-slate-600{% endif %}">
-                {{ ptype|title }}
-            </a>
-        {% endfor %}
     </div>
     
     <!-- Plans Grid -->
@@ -40,11 +34,11 @@
                 <!-- Price -->
                 <div class="mb-8">
                     <div class="flex items-baseline gap-2 mb-2">
-                        <span class="text-4xl font-bold gradient-text">${{ plan.price_monthly }}</span>
+                        <span class="text-4xl font-bold gradient-text">₦{{ plan.price_monthly }}</span>
                         <span class="text-gray-400">/month</span>
                     </div>
                     <p class="text-sm text-gray-400">
-                        or ${{ plan.price_annual }}/year (save {{ plan.price_annual|add:"-12"|add:plan.price_monthly|add:"*-1" }}%)
+                        or ₦{{ plan.price_annual }}/year (save {{ plan.price_annual|add:"-12"|add:plan.price_monthly|add:"*-1" }}%)
                     </p>
                 </div>
                 
@@ -83,16 +77,22 @@
                 
                 <!-- Buttons -->
                 <div class="space-y-3">
-                    <a href="{% url 'hosting_plan_detail' plan.id %}" class="block btn-primary text-center">
-                        View Details
-                    </a>
                     {% if user.is_authenticated %}
-                        <form action="{% url 'add_to_cart' %}" method="POST" class="w-full">
+                        <form action="{% url 'add_to_cart' %}"
+                            method="POST"
+                            class="add-to-cart-form w-full">
+
                             {% csrf_token %}
+
                             <input type="hidden" name="item_type" value="hosting">
                             <input type="hidden" name="plan_id" value="{{ plan.id }}">
                             <input type="hidden" name="duration" value="monthly">
-                            <button type="submit" class="btn-secondary w-full">Add to Cart</button>
+
+                            <button type="submit"
+                                    class="btn-secondary w-full border rounded-3xl p-2">
+                                Add to Cart
+                            </button>
+
                         </form>
                     {% else %}
                         <a href="{% url 'login' %}?next={% url 'hosting_plans' %}" class="block btn-secondary text-center">
@@ -193,42 +193,104 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block extra_js %}
 <script>
-    // Add to cart functionality
-    document.querySelectorAll('form[action*="add_to_cart"]').forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            fetch(this.action, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': csrftoken,
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams(new FormData(this))
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showNotification('Hosting plan added to cart!', 'success');
-                    setTimeout(() => {
-                        window.location.href = '{% url "view_cart" %}';
-                    }, 1500);
-                }
+    document.addEventListener("DOMContentLoaded", function () {
+
+        console.log("Hosting JS Loaded");
+
+        const forms = document.querySelectorAll(".add-to-cart-form");
+
+        console.log("Forms found:", forms.length);
+
+        forms.forEach(function(form) {
+
+            form.addEventListener("submit", function(e) {
+
+                e.preventDefault();
+
+                console.log("Submitting form...");
+
+                fetch(form.action, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": csrftoken,
+                        "X-Requested-With": "XMLHttpRequest",
+                    },
+                    body: new FormData(form)
+                })
+                .then(response => {
+
+                    if (!response.ok) {
+                        throw new Error("Server returned " + response.status);
+                    }
+
+                    return response.json();
+                })
+                .then(data => {
+
+                    console.log(data);
+
+                    if (data.success) {
+
+                        showNotification(
+                            "Hosting plan added to cart!",
+                            "success"
+                        );
+
+                        setTimeout(function() {
+                            window.location.href = "{% url 'view_cart' %}";
+                        }, 800);
+
+                    } else {
+
+                        showNotification(
+                            data.message || "Something went wrong",
+                            "error"
+                        );
+
+                    }
+
+                })
+                .catch(function(error) {
+
+                    console.error(error);
+
+                    showNotification(
+                        "Failed to add item to cart.",
+                        "error"
+                    );
+
+                });
+
             });
+
         });
+
     });
-    
-    function showNotification(message, type = 'success') {
-        const notification = document.createElement('div');
-        notification.className = `fixed top-20 right-4 p-4 rounded-lg ${type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white shadow-lg z-50`;
+
+
+    function showNotification(message, type = "success") {
+
+        const notification = document.createElement("div");
+
+        notification.className =
+            "fixed top-5 right-5 px-5 py-3 rounded-lg text-white shadow-lg z-50 " +
+            (type === "success"
+                ? "bg-green-600"
+                : "bg-red-600");
+
         notification.textContent = message;
+
         document.body.appendChild(notification);
-        
+
         setTimeout(() => {
             notification.remove();
         }, 3000);
+
     }
 </script>
+
 {% endblock %}

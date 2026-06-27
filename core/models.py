@@ -29,6 +29,7 @@ class HostingPlan(models.Model):
     )
     
     name = models.CharField(max_length=100)
+    whm_package = models.CharField(max_length=100,unique=True,help_text="WHM package name")
     plan_type = models.CharField(max_length=20, choices=PLAN_TYPES)
     price_monthly = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
     price_annual = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
@@ -141,19 +142,43 @@ class Order(models.Model):
         self.save()
 
 class OrderItem(models.Model):
-    """Items in an order"""
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
-    
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.CASCADE,
+        related_name="items"
+    )
+
     item_type = models.CharField(max_length=20)
+
+    hosting_plan = models.ForeignKey(
+        HostingPlan,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL
+    )
+
+    domain_extension = models.ForeignKey(
+        DomainExtension,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL
+    )
+
+    domain_name = models.CharField(
+        max_length=255,
+        blank=True
+    )
+
     item_name = models.CharField(max_length=255)
     description = models.TextField()
-    
+
     quantity = models.IntegerField(default=1)
+
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
-    
-    # Additional data as JSON
-    metadata = models.JSONField(default=dict)
+
+    metadata = models.JSONField(default=dict, blank=True)
     
     def __str__(self):
         return f"{self.item_name} x {self.quantity}"
@@ -197,3 +222,34 @@ class Notification(models.Model):
     
     def __str__(self):
         return f"{self.title} - {self.user.username}"
+
+class HostingAccount(models.Model):
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE
+    )
+
+    order = models.OneToOneField(
+        Order,
+        on_delete=models.SET_NULL,
+        null=True
+    )
+
+    plan = models.ForeignKey(
+        HostingPlan,
+        on_delete=models.PROTECT
+    )
+
+    domain = models.CharField(max_length=255)
+
+    cpanel_username = models.CharField(max_length=30)
+
+    cpanel_login_url = models.URLField()
+
+    status = models.CharField(
+        max_length=20,
+        default="active"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)

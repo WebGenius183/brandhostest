@@ -37,14 +37,17 @@
                             
                             <!-- Price -->
                             <div class="text-right min-w-32">
-                                <div class="text-2xl font-bold text-cyan-400">${{ item.price }}</div>
+                                <div class="text-2xl font-bold text-cyan-400">₦{{ item.price }}</div>
                                 <div class="text-xs text-gray-400">per {{ item.hosting_duration|default:'year' }}</div>
                             </div>
                             
                             <!-- Remove Button -->
-                            <form action="{% url 'remove_from_cart' item.id %}" method="POST" class="inline">
+                            <form action="{% url 'remove_from_cart' item.id %}"
+                                method="POST"
+                                class="remove-from-cart-form inline">
                                 {% csrf_token %}
-                                <button type="submit" class="text-red-400 hover:text-red-300 transition text-sm font-semibold">
+                                <button type="submit"
+                                        class="text-red-400 hover:text-red-300 transition text-sm font-semibold">
                                     Remove
                                 </button>
                             </form>
@@ -62,7 +65,7 @@
                     <div class="space-y-4 mb-6 pb-6 border-b border-slate-700">
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-400">{{ items|length }} item{{ items|length|pluralize }}</span>
-                            <span>${{ total }}</span>
+                            <span>₦{{ total }}</span>
                         </div>
                     </div>
                     
@@ -70,15 +73,15 @@
                     <div class="space-y-3 mb-8">
                         <div class="flex justify-between">
                             <span class="text-gray-400">Subtotal</span>
-                            <span>${{ total }}</span>
+                            <span>₦{{ total }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-400">Tax (estimated)</span>
-                            <span>$0.00</span>
+                            <span>₦0.00</span>
                         </div>
                         <div class="border-t border-slate-700 pt-3 flex justify-between text-lg font-bold">
                             <span>Total</span>
-                            <span class="gradient-text">${{ total }}</span>
+                            <span class="gradient-text">₦{{ total }}</span>
                         </div>
                     </div>
                     
@@ -116,15 +119,104 @@
         </div>
     {% endif %}
 </div>
+{% endblock %}
 
+
+{% block extra_js %}
 <script>
-    // Remove item confirmation
-    document.querySelectorAll('form[action*="remove_from_cart"]').forEach(form => {
-        form.addEventListener('submit', function(e) {
-            if (!confirm('Remove this item from cart?')) {
+    document.addEventListener("DOMContentLoaded", function () {
+
+        console.log("Cart JS Loaded");
+
+        const forms = document.querySelectorAll(".remove-from-cart-form");
+
+        console.log("Remove forms found:", forms.length);
+
+        forms.forEach(function (form) {
+
+            form.addEventListener("submit", function (e) {
+
                 e.preventDefault();
-            }
+
+                fetch(form.action, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": csrftoken,
+                        "X-Requested-With": "XMLHttpRequest",
+                    },
+                    body: new FormData(form)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Server Error");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+
+                    console.log(data);
+
+                    if (data.success) {
+
+                        showNotification("Item removed from cart!", "success");
+
+                        const card = form.closest(".card");
+
+                        if (card) {
+                            card.style.transition = "all 0.3s ease";
+                            card.style.opacity = "0";
+                            card.style.transform = "translateX(20px)";
+                        }
+
+                        setTimeout(() => {
+                            location.reload();
+                        }, 400);
+
+                    } else {
+
+                        showNotification(
+                            data.message || "Unable to remove item.",
+                            "error"
+                        );
+
+                    }
+
+                })
+                .catch(error => {
+
+                    console.error(error);
+
+                    showNotification(
+                        "Something went wrong.",
+                        "error"
+                    );
+
+                });
+
+            });
+
         });
+
     });
+
+    function showNotification(message, type = "success") {
+
+        const notification = document.createElement("div");
+
+        notification.className =
+            "fixed top-5 right-5 px-5 py-3 rounded-lg shadow-lg z-50 text-white transition-all duration-300 " +
+            (type === "success"
+                ? "bg-green-600"
+                : "bg-red-600");
+
+        notification.textContent = message;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+
+    }
 </script>
 {% endblock %}
